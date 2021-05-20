@@ -3,11 +3,11 @@ const app = express();
 const server = require("http").Server(app);
 const { v4: uuidv4 } = require("uuid");
 app.set("view engine", "ejs");
-const io = require("socket.io")(server, {
+const io = require("socket.io")(server/* , {
   cors: {
-    origin: '*'
+    origin: '*'//*
   }
-});
+} */);
 const { ExpressPeerServer } = require("peer");
 const peerServer = ExpressPeerServer(server, {
   debug: true,
@@ -25,13 +25,14 @@ app.get("/:room", (req, res) => {
 });
 
 io.on("connection", (socket) => {
-  socket.on("join-room", (roomId, userId, userName) => {
+  socket.on("join-room", (roomId, userId, userName) => {//*
     socket.join(roomId);
     socket.to(roomId).broadcast.emit("user-connected", userId);
-    socket.on("message", (message) => {
+    socket.on("message", (message) => {//*
       io.to(roomId).emit("createMessage", message, userName);
     });
   });
 });
 
+//server.listen(3030);
 server.listen(process.env.PORT || 3030);
